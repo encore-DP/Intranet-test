@@ -16,7 +16,7 @@ return function (App $app) {
             
             // Capturar el contenido de la vista
             ob_start();
-            include __DIR__ . '/../Views/index.php';
+            include __DIR__ . '/../src/Views/index.php';
             $html = ob_get_clean();
             
             $response->getBody()->write($html);

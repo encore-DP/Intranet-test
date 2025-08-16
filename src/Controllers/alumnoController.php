@@ -13,13 +13,13 @@ class AlumnoController {
     }
 
     // 📄 Listar alumnos
-    public function lista(Request $request, Response $response) {
-        $alumnos = $this->model->listar();
-        ob_start();
-        include __DIR__ . "/../Views/alumnos/lista.php";
-        $html = ob_get_clean();
-        $response->getBody()->write($html);
-        return $response;
+    public function lista(Request $request, Response $response, array $args = []): Response {
+    $alumnos = $this->model->listar();
+    ob_start();
+    include __DIR__ . "/../Views/alumnos/lista.php";
+    $html = ob_get_clean();
+    $response->getBody()->write($html);
+    return $response;
     }
 
     // 📄 Formulario nuevo alumno
