@@ -1,17 +1,19 @@
 <?php
+declare(strict_types=1);
+
 use Slim\Factory\AppFactory;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-// 1️⃣ Crear la aplicación
 $app = AppFactory::create();
 
-// 2️⃣ Agregar middlewares
+// Si la app está en una subcarpeta, descomenta y ajusta:
+// $app->setBasePath('/intranet-test/public');
+
 $app->addRoutingMiddleware();
 $app->addErrorMiddleware(true, true, true);
 
-// 3️⃣ Cargar rutas
+// Cargar rutas
 (require __DIR__ . '/../routes/web.php')($app);
 
-// 4️⃣ Ejecutar la app
 $app->run();

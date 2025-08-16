@@ -1,35 +1,33 @@
 <?php
+declare(strict_types=1);
+
 use Slim\App;
+use Slim\Routing\RouteCollectorProxy;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\ResponseInterface as Response;
+
 use App\Controllers\AlumnoController;
 
+return function (App $app): void {
 
-return function (App $app) {
-    // Ruta principal modificada para cargar Views/index.php
+    // Home: carga una vista
     $app->get('/', function (Request $request, Response $response) {
-        // Verificar conexi¨®n a BD primero
-        try {
-            $pdo = new PDO('mysql:host=localhost;dbname=delcorbc_certiperu_intranet', 'delcorbc_encore', 'EncoreDP2025$$');
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $pdo = null; // Cerramos conexi¨®n despu¨¦s de verificar
-            
-            // Capturar el contenido de la vista
-            ob_start();
-            include __DIR__ . '/../src/Views/index.php';
-            $html = ob_get_clean();
-            
-            $response->getBody()->write($html);
-            return $response;
-            
-        } catch (PDOException $e) {
-            $response->getBody()->write("Error de conexi¨®n a la base de datos");
-            return $response->withStatus(500);
-        }
+        ob_start();
+        // ajusta si tu index de vistas estÃ¡ en otro sitio
+        include __DIR__ . '/../src/Views/index.php';
+        $html = ob_get_clean();
+
+        $response->getBody()->write($html);
+        return $response;
     });
 
-    // ==== GRUPO ALUMNOS ==== (Manteniendo todo igual)
-    $app->group('/alumnos', function ($group) {
-        $group->get('/lista', [AlumnoController::class, 'lista']);
+    // Grupo de rutas: Alumnos
+    $app->group('/alumnos', function (RouteCollectorProxy $group) {
+        $group->get('/lista',  [AlumnoController::class, 'lista']);
+        $group->get('/nuevo',  [AlumnoController::class, 'nuevo']);
+        $group->post('',       [AlumnoController::class, 'guardar']);
+        $group->get('/{id}/editar', [AlumnoController::class, 'editarVista']);
+        $group->post('/{id}/editar', [AlumnoController::class, 'editar']);
+        $group->post('/{id}/eliminar', [AlumnoController::class, 'eliminar']);
     });
-
-
 };
