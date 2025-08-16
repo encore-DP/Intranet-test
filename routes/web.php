@@ -1,18 +1,16 @@
 <?php
 use Slim\App;
 use App\Controllers\AlumnoController;
-use App\Controllers\CursoController;
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
+
 
 return function (App $app) {
     // Ruta principal modificada para cargar Views/index.php
     $app->get('/', function (Request $request, Response $response) {
-        // Verificar conexiÃ³n a BD primero
+        // Verificar conexi¨®n a BD primero
         try {
             $pdo = new PDO('mysql:host=localhost;dbname=delcorbc_certiperu_intranet', 'delcorbc_encore', 'EncoreDP2025$$');
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $pdo = null; // Cerramos conexiÃ³n despuÃ©s de verificar
+            $pdo = null; // Cerramos conexi¨®n despu¨¦s de verificar
             
             // Capturar el contenido de la vista
             ob_start();
@@ -23,7 +21,7 @@ return function (App $app) {
             return $response;
             
         } catch (PDOException $e) {
-            $response->getBody()->write("Error de conexiÃ³n a la base de datos");
+            $response->getBody()->write("Error de conexi¨®n a la base de datos");
             return $response->withStatus(500);
         }
     });
@@ -31,20 +29,7 @@ return function (App $app) {
     // ==== GRUPO ALUMNOS ==== (Manteniendo todo igual)
     $app->group('/alumnos', function ($group) {
         $group->get('/lista', [AlumnoController::class, 'lista']);
-        $group->get('/nuevo', [AlumnoController::class, 'nuevo']);
-        $group->post('/guardar', [AlumnoController::class, 'guardar']);
-        $group->get('/editar/{id}', [AlumnoController::class, 'editar']);
-        $group->post('/actualizar/{id}', [AlumnoController::class, 'actualizar']);
-        $group->get('/eliminar/{id}', [AlumnoController::class, 'eliminar']);
     });
 
-    // ==== GRUPO CURSOS ==== (Manteniendo todo igual)
-    $app->group('/cursos', function ($group) {
-        $group->get('/lista', [CursoController::class, 'lista']);
-        $group->get('/nuevo', [CursoController::class, 'nuevo']);
-        $group->post('/guardar', [CursoController::class, 'guardar']);
-        $group->get('/editar/{id}', [CursoController::class, 'editar']);
-        $group->post('/actualizar/{id}', [CursoController::class, 'actualizar']);
-        $group->get('/eliminar/{id}', [CursoController::class, 'eliminar']);
-    });
+
 };

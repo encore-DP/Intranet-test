@@ -21,7 +21,7 @@ class AlumnoController {
     $response->getBody()->write($html);
     return $response;
     }
-
+    
     // 📄 Formulario nuevo alumno
     public function nuevo(Request $request, Response $response) {
         ob_start();
