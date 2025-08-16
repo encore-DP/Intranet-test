@@ -1,0 +1,14 @@
+{
+    "name": "certiperu/intranet",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "require": {
+        "slim/slim": "^4.0",
+        "slim/psr7": "^1.7",
+        "dompdf/dompdf": "^3.1",
+        "endroid/qr-code": "^4.8"
+    }
+}
