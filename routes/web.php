@@ -30,4 +30,14 @@ return function (App $app): void {
         $group->post('/{id}/editar', [AlumnoController::class, 'editar']);
         $group->post('/{id}/eliminar', [AlumnoController::class, 'eliminar']);
     });
+
+        // Grupo de rutas: Cursos
+    $app->group('/cursos', function (RouteCollectorProxy $group) {
+        $group->get('/lista',  [CursoController::class, 'lista']);
+        $group->get('/nuevo',  [CursoController::class, 'nuevo']);
+        $group->post('',       [CursoController::class, 'guardar']);
+        $group->get('/{id}/editar', [CursoController::class, 'editarVista']);
+        $group->post('/{id}/editar', [CursoController::class, 'editar']);
+        $group->post('/{id}/eliminar', [CursoController::class, 'eliminar']);
+    });
 };
