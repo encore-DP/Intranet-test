@@ -1,7 +1,7 @@
 <?php
-// En tu layout (antes del <nav>), calcula la subcarpeta actual:
-$basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/'); // ej: "" o "/Intranet-test/public"
-?>           
+$basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
+if ($basePath === '/') { $basePath = ''; }  // <- clave para evitar //
+?>      
            
            <!-- Left Sidebar Start -->
             <div class="app-sidebar-menu">
@@ -44,10 +44,10 @@ $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/'); // ej: "" o "/Intranet
                                 <div class="collapse" id="sidebarAlumnos">
                                     <ul class="nav-second-level">
                                         <li>
-                                            <a href="<?= $basePath ?>/alumnos/lista" class="tp-link"><i class="ti ti-point"></i>Alumnos</a>
+                                            <a href="/alumnos/lista" class="tp-link"><i class="ti ti-point"></i>Alumnos</a>
                                         </li>
                                         <li>
-                                            <a href="<?= $basePath ?>/alumnos/nuevo" class="tp-link"><i class="ti ti-point"></i>Nuevo Alumno</a>
+                                            <a href="/alumnos/nuevo" class="tp-link"><i class="ti ti-point"></i>Nuevo Alumno</a>
                                         </li>
                                     </ul>
                                 </div>
