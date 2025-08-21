@@ -64,10 +64,10 @@ if ($basePath === '/') { $basePath = ''; }  // <- clave para evitar //
                                 <div class="collapse" id="sidebarEmpresas">
                                     <ul class="nav-second-level">
                                         <li>
-                                            <a href="<?= $basePath ?>/empresa/lista" class="tp-link"><i class="ti ti-point"></i>Empresas</a>
+                                            <a href="/empresas/lista" class="tp-link"><i class="ti ti-point"></i>Empresas</a>
                                         </li>
                                         <li>
-                                            <a href="<?= $basePath ?>/empresa/nuevo " class="tp-link"><i class="ti ti-point"></i>Nueva Empresas</a>
+                                            <a href="/empresas/nuevo " class="tp-link"><i class="ti ti-point"></i>Nueva Empresas</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -84,10 +84,10 @@ if ($basePath === '/') { $basePath = ''; }  // <- clave para evitar //
                                 <div class="collapse" id="sidebarCursos">
                                     <ul class="nav-second-level">
                                         <li>
-                                            <a href="<?= $basePath ?>/cursos/lista" class="tp-link"><i class="ti ti-point"></i>Cursos</a>
+                                            <a href="/cursos/lista" class="tp-link"><i class="ti ti-point"></i>Cursos</a>
                                         </li>
                                         <li>
-                                            <a href="<?= $basePath ?>/cursos/nuevo" class="tp-link"><i class="ti ti-point"></i>Nuevo Curso</a>
+                                            <a href="/cursos/nuevo" class="tp-link"><i class="ti ti-point"></i>Nuevo Curso</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -104,10 +104,10 @@ if ($basePath === '/') { $basePath = ''; }  // <- clave para evitar //
                                 <div class="collapse" id="sidebarCertificados">
                                     <ul class="nav-second-level">
                                         <li>
-                                            <a href="<?= $basePath ?>/certificados/nuevo" class="tp-link"><i class="ti ti-point"></i>Nuevo Certificado</a>
+                                            <a href="/certificados/nuevo" class="tp-link"><i class="ti ti-point"></i>Nuevo Certificado</a>
                                         </li>
                                         <li>
-                                            <a href="<?= $basePath ?>/certificados/lista" class="tp-link"><i class="ti ti-point"></i>List de Certificados</a>
+                                            <a href="/certificados/lista" class="tp-link"><i class="ti ti-point"></i>List de Certificados</a>
                                         </li>
                                     </ul>
                                 </div>

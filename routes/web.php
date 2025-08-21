@@ -7,6 +7,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
 use App\Controllers\AlumnoController;
+use App\Controllers\CursoController;
+use App\Controllers\EmpresaController;
 
 return function (App $app): void {
 
@@ -39,5 +41,15 @@ return function (App $app): void {
         $group->get('/{id}/editar', [CursoController::class, 'editarVista']);
         $group->post('/{id}/editar', [CursoController::class, 'editar']);
         $group->post('/{id}/eliminar', [CursoController::class, 'eliminar']);
+    });
+
+        // Grupo de rutas: Empresa
+    $app->group('/empresas', function (RouteCollectorProxy $group) {
+        $group->get('/lista',  [EmpresaController::class, 'lista']);
+        $group->get('/nuevo',  [EmpresaController::class, 'nuevo']);
+        $group->post('',       [EmpresaController::class, 'guardar']);
+        $group->get('/{id}/editar', [EmpresaController::class, 'editarVista']);
+        $group->post('/{id}/editar', [EmpresaController::class, 'editar']);
+        $group->post('/{id}/eliminar', [EmpresaController::class, 'eliminar']);
     });
 };
