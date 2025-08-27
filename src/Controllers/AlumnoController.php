@@ -4,6 +4,7 @@ namespace App\Controllers;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Models\AlumnoModel;
+use App\Models\EmpresaModel;
 
 class AlumnoController {
     private $model;
@@ -23,10 +24,14 @@ class AlumnoController {
     }
     
     // 📄 Formulario nuevo alumno
-    public function nuevo(Request $request, Response $response) {
+    public function nuevo(Request $request, Response $response): Response {
+        $empresas = (new EmpresaModel())->listar();   // <- reusa tu modelo
+        $basePath = rtrim(dirname($request->getUri()->getPath()), '/');
+
         ob_start();
-        include __DIR__ . "/../Views/alumnos/nuevo.php";
+        include __DIR__ . '/../Views/alumnos/nuevo.php'; // la vista verá $empresas
         $html = ob_get_clean();
+
         $response->getBody()->write($html);
         return $response;
     }

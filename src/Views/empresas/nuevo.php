@@ -2,7 +2,7 @@
 <html lang="es">
     <head>
         <meta charset="utf-8" />
-        <title>Alumnos | Certiperu - Sistema Intranet</title>
+        <title>Empresas | Certiperu - Sistema Intranet</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="Intranet Certiperu Consultores"/>
         <meta name="author" content="Encore Digital"/>
@@ -46,13 +46,13 @@
 
                         <div class="py-3 d-flex align-items-sm-center flex-sm-row flex-column">
                             <div class="flex-grow-1">
-                                <h4 class="fs-18 fw-semibold m-0">Registro de Alumnos</h4>
+                                <h4 class="fs-18 fw-semibold m-0">Registro de Empresa</h4>
                             </div>
 
                             <div class="text-end">
                                 <ol class="breadcrumb m-0 py-0">
-                                    <li class="breadcrumb-item"><a href="javascript: void(0);">Alumnos</a></li>
-                                    <li class="breadcrumb-item active">Nuevo Alumno</li>
+                                    <li class="breadcrumb-item"><a href="javascript: void(0);">Empresa</a></li>
+                                    <li class="breadcrumb-item active">Nueva Empresa</li>
                                 </ol>
                             </div>
                         </div>
@@ -73,23 +73,8 @@
                                                 <input type="text" id="autoSizingInput" class="form-control">
                                             </div>
                                             <div class="col-sm-5">
-                                                <label for="simpleinput" class="form-label">Apellido</label>
+                                                <label for="simpleinput" class="form-label">RUC</label>
                                                 <input type="text" id="autoSizingInput" class="form-control">
-                                            </div>
-                                            <div class="col-sm-5">
-                                                <label for="example-email" class="form-label">DNI</label>
-                                                <input type="text" id="example-email" name="example-email" class="form-control" placeholder="DNI">
-                                            </div>
-                                            <div class="col-sm-5">
-                                              <label for="empresa_id" class="form-label">Empresa</label>
-                                              <select id="empresa_id" name="empresa_id" class="form-select" required>
-                                                <option value="">— Selecciona —</option>
-                                                <?php foreach ($empresas as $e): ?>
-                                                  <option value="<?= $e['empresa_id'] ?>">
-                                                    <?= htmlspecialchars($e['nombre']) ?>
-                                                  </option>
-                                                <?php endforeach; ?>
-                                              </select>
                                             </div>
                                             <div class="col-12 mt-4">
                                                 <button type="submit" class="btn btn-primary">Registar</button>

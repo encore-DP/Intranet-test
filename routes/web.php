@@ -9,6 +9,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use App\Controllers\AlumnoController;
 use App\Controllers\CursoController;
 use App\Controllers\EmpresaController;
+use App\Controllers\CertificadoController;
 
 return function (App $app): void {
 
@@ -52,4 +53,18 @@ return function (App $app): void {
         $group->post('/{id}/editar', [EmpresaController::class, 'editar']);
         $group->post('/{id}/eliminar', [EmpresaController::class, 'eliminar']);
     });
+
+        // Grupo de rutas: Certificados
+    $app->group('/certificados', function (RouteCollectorProxy $group) {
+        $group->get('/lista',  [CertificadoController::class, 'lista']);
+        $group->get('/nuevo',  [CertificadoController::class, 'nuevo']);
+    $group->post('', [CertificadoController::class, 'guardar'])
+          ->setName('certificados.guardar');
+
+        $group->get('/{id}/editar', [CertificadoController::class, 'editarVista']);
+        $group->post('/{id}/editar', [CertificadoController::class, 'editar']);
+        $group->post('/{id}/eliminar', [CertificadoController::class, 'eliminar']);
+    });    
+
+    
 };

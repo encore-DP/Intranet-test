@@ -10,6 +10,11 @@ class CursoModel {
         $this->db = getDB();
     }
 
+    public function listarCategorias(): array {
+        $stmt = $this->db->query("SELECT categoria_id, nombre FROM categorias_cursos ORDER BY nombre");
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
     public function listar() {
         $stmt = $this->db->prepare("CALL listar_cursos()");
         $stmt->execute();

@@ -23,13 +23,17 @@ class CursoController {
     }
 
     // 📄 Formulario nuevo curso
-    public function nuevo(Request $request, Response $response) {
+    public function nuevo(Request $request, Response $response): Response {
+        $categorias = $this->model->listarCategorias();
+    
         ob_start();
-        include __DIR__ . "/../Views/cursos/nuevo.php";
+        include __DIR__ . '/../Views/cursos/nuevo.php';
         $html = ob_get_clean();
+    
         $response->getBody()->write($html);
         return $response;
     }
+    
 
     // 💾 Guardar curso nuevo
     public function guardar(Request $request, Response $response) {
