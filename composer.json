@@ -9,6 +9,10 @@
         "slim/slim": "^4.0",
         "slim/psr7": "^1.7",
         "dompdf/dompdf": "^3.1",
-        "endroid/qr-code": "^4.8"
+        "endroid/qr-code": "^4.8",
+        "setasign/fpdf": "^1.8",
+        "setasign/fpdi": "^2.6",
+        "setasign/tfpdf": "^1.33",
+        "setasign/fpdi-tfpdf": "^2.2"
     }
 }
