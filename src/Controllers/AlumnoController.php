@@ -44,9 +44,10 @@ class AlumnoController {
     }
 
     // 📄 Formulario editar alumno
-    public function editar(Request $request, Response $response, array $args) {
+    public function editarVista(Request $request, Response $response, array $args) {
         $id = $args['id'];
         $alumno = $this->model->buscarPorId($id); // 🔹 Necesitamos agregar este método en el modelo
+        $empresas = (new \App\Models\EmpresaModel())->listar();
         ob_start();
         include __DIR__ . "/../Views/alumnos/editar.php";
         $html = ob_get_clean();
@@ -59,14 +60,44 @@ class AlumnoController {
         $id = $args['id'];
         $params = (array) $request->getParsedBody();
         $this->model->editar($id, $params['dni'], $params['nombre'], $params['apellido'], $params['empresa_id']);
-        return $response->withHeader('Location', '/alumnos/lista')->withStatus(302);
+        return $response->withHeader('Location', '/alumnos/lista?ok=updated')->withStatus(302);
     }
 
     // 🗑 Eliminar alumno
     public function eliminar(Request $request, Response $response, array $args) {
         $id = $args['id'];
         $this->model->eliminar($id);
-        return $response->withHeader('Location', '/alumnos/lista')->withStatus(302);
+        return $response->withHeader('Location', '/alumnos/lista?ok=deleted')->withStatus(302);
     }
+
+        /** POST /alumnos/{id}/editar */
+    public function editar(Request $request, Response $response, array $args): Response
+    {
+        $id = (int)($args['id'] ?? 0);
+        $p  = (array)$request->getParsedBody();
+
+        $dni       = trim($p['dni'] ?? '');
+        $nombre    = trim($p['nombre'] ?? '');
+        $apellido  = trim($p['apellido'] ?? '');
+        $empresaId = isset($p['empresa_id']) && $p['empresa_id'] !== '' ? (int)$p['empresa_id'] : 0;
+
+        if ($id <= 0 || $dni === '' || $nombre === '' || $apellido === '' || $empresaId <= 0) {
+            $response->getBody()->write('Faltan datos obligatorios');
+            return $response->withStatus(400);
+        }
+
+        // usa tu SP editar_alumno
+        $ok = $this->model->editar($id, $dni, $nombre, $apellido, $empresaId);
+        if (!$ok) {
+            $response->getBody()->write('No se pudo actualizar el alumno');
+            return $response->withStatus(500);
+        }
+
+        // vuelve a la lista con flash por query
+        return $response
+            ->withHeader('Location', '/alumnos/lista?ok=updated')
+            ->withStatus(302);
+    }
+
 }
 

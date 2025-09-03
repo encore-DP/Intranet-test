@@ -1,40 +1,58 @@
 <?php
 namespace App\Models;
 
+use PDO;
+
 require_once __DIR__ . '/../Utilities/Database.php';
 
 class AlumnoModel {
-    private $db;
+    private PDO $db;
 
     public function __construct() {
-        $this->db = getDB();
+        $this->db = \getDB();
     }
 
-    public function listar() {
+    /** Listar alumnos con su empresa */
+    public function listar(): array {
         $stmt = $this->db->prepare("CALL listar_alumnos()");
         $stmt->execute();
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt->closeCursor(); // importante cuando usas CALL
+        return $rows;
     }
 
-    public function insertar($dni, $nombre, $apellido, $empresa_id) {
+    /** Buscar alumno por ID (para editar) */
+    public function buscarPorId(int $id): ?array {
+        $stmt = $this->db->prepare("SELECT alumno_id, dni, nombre, apellido, empresa_id
+                                    FROM alumnos
+                                    WHERE alumno_id = ?");
+        $stmt->execute([$id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt->closeCursor();
+        return $row ?: null;
+    }
+
+    /** Insertar nuevo alumno */
+    public function insertar(string $dni, string $nombre, string $apellido, int $empresaId): bool {
         $stmt = $this->db->prepare("CALL insertar_alumno(?, ?, ?, ?)");
-        return $stmt->execute([$dni, $nombre, $apellido, $empresa_id]);
+        $ok   = $stmt->execute([$dni, $nombre, $apellido, $empresaId]);
+        $stmt->closeCursor();
+        return $ok;
     }
 
-    public function editar($id, $dni, $nombre, $apellido, $empresa_id) {
+    /** Editar alumno */
+    public function editar(int $id, string $dni, string $nombre, string $apellido, int $empresaId): bool {
         $stmt = $this->db->prepare("CALL editar_alumno(?, ?, ?, ?, ?)");
-        return $stmt->execute([$id, $dni, $nombre, $apellido, $empresa_id]);
+        $ok   = $stmt->execute([$id, $dni, $nombre, $apellido, $empresaId]);
+        $stmt->closeCursor();
+        return $ok;
     }
 
-    public function eliminar($id) {
+    /** Eliminar alumno */
+    public function eliminar(int $id): bool {
         $stmt = $this->db->prepare("CALL eliminar_alumno(?)");
-        return $stmt->execute([$id]);
+        $ok   = $stmt->execute([$id]);
+        $stmt->closeCursor();
+        return $ok;
     }
-
-    public function buscarPorId($id) {
-    $stmt = $this->db->prepare("SELECT * FROM alumnos WHERE alumno_id = ?");
-    $stmt->execute([$id]);
-    return $stmt->fetch(\PDO::FETCH_ASSOC);
-    }
-
 }

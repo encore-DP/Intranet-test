@@ -33,10 +33,15 @@
             <!-- Left Sidebar Start -->
     <?php include __DIR__ . '/../layouts/sidebar.php'; ?>            
             <!-- Left Sidebar End -->
-            
+<?php
+  // base path seguro (por si tu app no está en /)
+  $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
+  // flash simple por query
+  $ok = $_GET['ok'] ?? null;
+?>            
             <!-- -------------------------------------------------------------- -->
             <!-- Start Page Content here -->
-            <!-- -------------------------------------------------------------- -->
+            <!-- -------------------------------------------------------------- -->        
         
             <div class="content-page">
                 <div class="content">
@@ -56,6 +61,18 @@
                                 </ol>
                             </div>
                         </div>
+                        <?php if ($ok === 'deleted'): ?>
+                          <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            Alumno eliminado correctamente.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                          </div>
+                        <?php elseif ($ok === 'updated'): ?>
+                          <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            Alumno actualizado correctamente.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                          </div>
+                        <?php endif; ?>
+                        
 
                         <div class="row">
                             <div class="col-12">
@@ -87,23 +104,27 @@
                                                     <td><?= htmlspecialchars($a['empresa']) ?></td>
 
                                                     <td class="text-end">
-                                                        <a href="alumno_editar.php?id=<?= $a['alumno_id'] ?>" 
-                                                           aria-label="Editar" 
-                                                           class="btn btn-icon btn-sm border shadow-sm me-1" 
-                                                           data-bs-toggle="tooltip" 
-                                                           title="Editar">
-                                                            <i class="mdi mdi-pencil-outline fs-14 text-primary"></i>
-                                                        </a>
-
-                                                        <a href="alumno_eliminar.php?id=<?= $a['alumno_id'] ?>" 
-                                                           aria-label="Eliminar" 
-                                                           class="btn btn-icon btn-sm border shadow-sm" 
-                                                           data-bs-toggle="tooltip" 
-                                                           title="Eliminar"
-                                                           onclick="return confirm('¿Seguro que deseas eliminar este alumno?');">
-                                                            <i class="mdi mdi-delete fs-14 text-danger"></i>
-                                                        </a>
+                                                      <a href="/alumnos/<?= (int)$a['alumno_id'] ?>/editar"
+                                                         aria-label="Editar"
+                                                         class="btn btn-icon btn-sm border shadow-sm me-1"
+                                                         data-bs-toggle="tooltip"
+                                                         title="Editar">
+                                                        <i class="mdi mdi-pencil-outline fs-14 text-primary"></i>
+                                                      </a>
+                                                     <!-- ESTA POR DEFINIRSE                                            
+                                                      <button type="button"
+                                                              aria-label="Eliminar"
+                                                              class="btn btn-icon btn-sm border shadow-sm"
+                                                              data-bs-toggle="modal"
+                                                              data-bs-target="#confirmDelete"
+                                                              data-id="<?= (int)$a['alumno_id'] ?>"
+                                                              data-name="<?= htmlspecialchars($a['nombre'].' '.$a['apellido']) ?>"
+                                                              title="Eliminar">
+                                                        <i class="mdi mdi-delete fs-14 text-danger"></i>
+                                                      </button>
+                                                      -->
                                                     </td>
+                                                                                                
                                                 </tr>
                                             <?php endforeach; ?>
                                         <?php else: ?>
@@ -133,6 +154,26 @@
             <!-- End Page content -->
             <!-- -------------------------------------------------------------- -->
 
+            <!-- Modal: Confirmar eliminación -->
+            <div class="modal fade" id="confirmDelete" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <form method="post" class="modal-content" id="deleteForm">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Eliminar alumno</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p>¿Seguro que deseas eliminar a <strong id="delName">—</strong>?</p>
+                    <p class="text-muted mb-0">Esta acción no se puede deshacer.</p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+                  </div>
+                </form>
+              </div>
+            </div>           
+
         </div>
         <!-- End Begin page -->
 
@@ -154,6 +195,39 @@
 
         <!-- App js-->
         <script src="/assets/js/app.js"></script>
+
+        <!-- Modal: Confirmar eliminación -->
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          const modalEl = document.getElementById('confirmDelete');
+          if (!modalEl) return;
+        
+          modalEl.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;              // el botón que abrió el modal
+            if (!button) return;
+        
+            const id   = button.getAttribute('data-id') || '';
+            const name = button.getAttribute('data-name') || '—';
+        
+            // pinta el nombre en el modal
+            const delNameEl = document.getElementById('delName');
+            if (delNameEl) delNameEl.textContent = name;
+        
+            // arma la acción del form (POST)
+            const form = document.getElementById('deleteForm');
+            if (form) {
+              // si tu app está en la raíz:
+              form.action = '/alumnos/' + id + '/eliminar';
+            
+              // si usas subcarpeta, usa basePath:
+              // const basePath = '<?= ($basePathRaw = dirname($_SERVER['SCRIPT_NAME'])) === "/" ? "" : rtrim($basePathRaw, "/") ?>';
+              // form.action = basePath + '/alumnos/' + id + '/eliminar';
+            }
+          });
+        });
+        </script>
+
+        
 
     </body>
 </html>
