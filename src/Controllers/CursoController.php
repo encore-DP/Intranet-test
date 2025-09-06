@@ -36,17 +36,33 @@ class CursoController {
     
 
     // 💾 Guardar curso nuevo
-    public function guardar(Request $request, Response $response) {
-        $params = (array) $request->getParsedBody();
-        $this->model->insertar(
-            $params['categoria_id'],
-            $params['nombre'],
-            $params['modalidad'],
-            $params['horas'],
-            $params['descripcion']
-        );
+    public function guardar(Request $request, Response $response): Response {
+        $p = (array)$request->getParsedBody();
+
+        $categoriaId = (int)($p['categoria_id'] ?? 0);
+        $nombre      = trim($p['nombre'] ?? '');
+        $modalidad   = trim($p['modalidad'] ?? '');
+        // Normaliza horas: quita todo lo que no sea dígito y convierte a int
+        $horasStr    = trim($p['horas'] ?? '');
+        $horas       = (int)preg_replace('/\D+/', '', $horasStr);
+        $descripcion = trim($p['descripcion'] ?? '');
+
+        if ($categoriaId <= 0 || $nombre === '' || $modalidad === '' || $horas <= 0) {
+            $response->getBody()->write('Faltan datos obligatorios del curso (revisa categoría, nombre, modalidad y horas).');
+            return $response->withStatus(400);
+        }
+
+        $model = new \App\Models\CursoModel();
+        $ok = $model->insertar($categoriaId, $nombre, $modalidad, $horas, $descripcion);
+
+        if (!$ok) {
+            $response->getBody()->write('No se pudo guardar el curso.');
+            return $response->withStatus(500);
+        }
+
         return $response->withHeader('Location', '/cursos/lista')->withStatus(302);
-    }
+    } 
+    
 
     // 📄 Formulario editar curso
     public function editar(Request $request, Response $response, array $args) {

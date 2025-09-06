@@ -37,11 +37,28 @@ class AlumnoController {
     }
 
     // 💾 Guardar alumno nuevo
-    public function guardar(Request $request, Response $response) {
-        $params = (array) $request->getParsedBody();
-        $this->model->insertar($params['dni'], $params['nombre'], $params['apellido'], $params['empresa_id']);
+    public function guardar(Request $request, Response $response): Response {
+        $p = (array)$request->getParsedBody();
+        $dni        = trim($p['dni'] ?? '');
+        $nombre     = trim($p['nombre'] ?? '');
+        $apellido   = trim($p['apellido'] ?? '');
+        $empresa_id = (int)($p['empresa_id'] ?? 0);
+    
+        if ($dni === '' || $nombre === '' || $apellido === '' || $empresa_id <= 0) {
+            $response->getBody()->write('Faltan datos del alumno');
+            return $response->withStatus(400);
+        }
+    
+        $ok = (new \App\Models\AlumnoModel())->insertar($dni, $nombre, $apellido, $empresa_id);
+    
+        if (!$ok) {
+            $response->getBody()->write('No se pudo insertar alumno');
+            return $response->withStatus(500);
+        }
+    
         return $response->withHeader('Location', '/alumnos/lista')->withStatus(302);
     }
+    
 
     // 📄 Formulario editar alumno
     public function editarVista(Request $request, Response $response, array $args) {

@@ -33,9 +33,9 @@ class AlumnoModel {
     }
 
     /** Insertar nuevo alumno */
-    public function insertar(string $dni, string $nombre, string $apellido, int $empresaId): bool {
+    public function insertar(string $dni, string $nombre, string $apellido, int $empresa_id): bool {
         $stmt = $this->db->prepare("CALL insertar_alumno(?, ?, ?, ?)");
-        $ok   = $stmt->execute([$dni, $nombre, $apellido, $empresaId]);
+        $ok = $stmt->execute([$dni, $nombre, $apellido, $empresa_id]);
         $stmt->closeCursor();
         return $ok;
     }

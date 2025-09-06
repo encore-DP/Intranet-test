@@ -27,6 +27,7 @@ class EmpresaModel {
         $stmt->closeCursor();
         return $ok;
     }
+    
 
     public function editar(int $id, string $nombre, ?string $ruc): bool {
         $stmt = $this->db->prepare("CALL editar_empresa(?, ?, ?)");

@@ -21,10 +21,14 @@ class CursoModel {
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public function insertar($categoria_id, $nombre, $modalidad, $horas, $descripcion) {
+    public function insertar(int $categoriaId, string $nombre, string $modalidad, int $horas, string $descripcion): bool {
         $stmt = $this->db->prepare("CALL insertar_curso(?, ?, ?, ?, ?)");
-        return $stmt->execute([$categoria_id, $nombre, $modalidad, $horas, $descripcion]);
+        $ok = $stmt->execute([$categoriaId, $nombre, $modalidad, $horas, $descripcion]);
+        while ($stmt->nextRowset()) { /* noop */ }
+        $stmt->closeCursor();
+        return $ok;
     }
+    
 
     public function editar($id, $categoria_id, $nombre, $modalidad, $horas, $descripcion) {
         $stmt = $this->db->prepare("CALL editar_curso(?, ?, ?, ?, ?, ?)");

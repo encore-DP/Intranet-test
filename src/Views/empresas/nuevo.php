@@ -67,14 +67,14 @@
                                     </div><!-- end card header -->
                                     
                                     <div class="card-body">
-                                        <form class="row gy-2 gx-3 align-items-center">
+                                        <form method="post" action="/empresas" class="row gy-2 gx-3 align-items-center">
                                             <div class="col-sm-5">
                                                 <label for="simpleinput" class="form-label">Nombre</label>
-                                                <input type="text" id="autoSizingInput" class="form-control">
+                                                <input name="nombre" type="text" id="autoSizingInput" class="form-control">
                                             </div>
                                             <div class="col-sm-5">
                                                 <label for="simpleinput" class="form-label">RUC</label>
-                                                <input type="text" id="autoSizingInput" class="form-control">
+                                                <input name="ruc" type="text"  maxlength="11" id="autoSizingInput" class="form-control">
                                             </div>
                                             <div class="col-12 mt-4">
                                                 <button type="submit" class="btn btn-primary">Registar</button>

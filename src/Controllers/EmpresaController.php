@@ -37,13 +37,19 @@ class EmpresaController {
 
     /** POST /empresas  (crear) */
     public function guardar(Request $request, Response $response): Response {
-        $params = (array) $request->getParsedBody();
+        $params = (array)$request->getParsedBody();
         $nombre = trim($params['nombre'] ?? '');
         $ruc    = trim($params['ruc'] ?? '');
-
+    
+        if ($nombre === '' || $ruc === '') {
+            $response->getBody()->write('Nombre y RUC son obligatorios');
+            return $response->withStatus(400);
+        }
+    
         $this->model->insertar($nombre, $ruc);
         return $response->withHeader('Location', '/empresas/lista')->withStatus(302);
     }
+    
 
     /** GET /empresas/{id}/editar (form) */
     public function editarVista(Request $request, Response $response, array $args): Response {

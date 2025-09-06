@@ -67,18 +67,18 @@
                                     </div><!-- end card header -->
                                     
                                     <div class="card-body">
-                                        <form class="row gy-2 gx-3 align-items-center">
+                                        <form method="post" action="/cursos" class="row gy-2 gx-3 align-items-center">
                                             <div class="col-sm-5">
                                                 <label for="simpleinput" class="form-label">Nombre del Cursos</label>
-                                                <input type="text" id="autoSizingInput" class="form-control">
+                                                <input type="text" name="nombre" id="autoSizingInput" class="form-control">
                                             </div>
                                             <div class="col-sm-5">
                                                 <label for="simpleinput" class="form-label">Modalidad</label>
-                                                <input type="text" id="autoSizingInput" class="form-control">
+                                                <input type="text" name="modalidad" id="autoSizingInput" class="form-control">
                                             </div>
                                             <div class="col-sm-5">
                                                 <label for="example-email" class="form-label">Horas</label>
-                                                <input type="text" id="example-email" name="example-email" class="form-control" placeholder="">
+                                                <input type="number" name="horas" class="form-control" min="1" step="1" required>
                                             </div>
                                             <div class="col-sm-5">
                                               <label for="categoria_id" class="form-label">Categoría</label>
@@ -95,7 +95,7 @@
                                             <div class="col-sm-10">
                                                 <label for="example-email" class="form-label">Descripción</label>
                                                 <div class="form-floating">
-                                                    <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea"></textarea>
+                                                    <textarea class="form-control" name="descripcion" placeholder="Leave a comment here" id="floatingTextarea"></textarea>
                                                     <label for="floatingTextarea">Descripción del Cursos</label>
                                                 </div>
                                             </div>

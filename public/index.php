@@ -9,7 +9,7 @@ $app = AppFactory::create();
 
 // Si la app está en una subcarpeta, descomenta y ajusta:
 // $app->setBasePath('/intranet-test/public');
-
+$app->addBodyParsingMiddleware();
 $app->addRoutingMiddleware();
 $app->addErrorMiddleware(true, true, true);
 

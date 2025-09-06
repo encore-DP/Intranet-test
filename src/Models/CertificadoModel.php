@@ -17,12 +17,59 @@ class CertificadoModel
     }
 
     /** SP: listar_certificados() */
-    public function listar(): array
-    {
-        $st = $this->db->prepare("CALL listar_certificados()");
-        $st->execute();
-        $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-        $st->closeCursor();
+    public function listar(): array {
+        // 1) Intento con SP
+        $rows = [];
+        try {
+            $stmt = $this->db->prepare("CALL listar_certificados()");
+            $stmt->execute();
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        
+            // Drenar posibles result sets adicionales que a veces deja MySQL al usar CALL
+            while ($stmt->nextRowset()) { /* no-op, solo drenar */ }
+        
+            $stmt->closeCursor();
+        } catch (\PDOException $e) {
+            // Si el SP fallara por cualquier razón, pasamos al fallback
+            $rows = [];
+        }
+    
+        // 2) Fallback directo si el SP devolvió vacío o falló
+        if (empty($rows)) {
+            $sql = "
+                SELECT 
+                    cert.id,
+                    cert.codigo_unico,
+                    cert.fecha_emision,
+                    a.nombre AS alumno_nombre,
+                    a.apellido AS alumno_apellido,
+                    a.dni,
+                    c.nombre AS curso_nombre,
+                    e.nombre AS empresa_nombre,
+                    cert.certificado_url
+                FROM certificados cert
+                INNER JOIN alumnos a ON cert.alumno_id = a.alumno_id
+                INNER JOIN cursos  c ON cert.curso_id  = c.curso_id
+                INNER JOIN empresa e ON a.empresa_id  = e.empresa_id
+                ORDER BY cert.id DESC
+            ";
+            $q = $this->db->query($sql);
+            $rows = $q->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            $q->closeCursor();
+        }
+    
+        // 3) Normalización para la vista
+        foreach ($rows as &$r) {
+            $r['alumno_completo'] = trim(($r['alumno_nombre'] ?? '') . ' ' . ($r['alumno_apellido'] ?? ''));
+        
+            // Si tu SP/tabla no trae la URL, la reconstruimos
+            if (empty($r['certificado_url']) && !empty($r['codigo_unico'])) {
+                // Ajusta si tu carpeta pública es otra
+                $r['certificado_url'] = '/CERTIF/' . $r['codigo_unico'] . '.html';
+            }
+        }
+        unset($r);
+    
         return $rows;
     }
 

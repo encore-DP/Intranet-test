@@ -375,14 +375,15 @@ private function renderPreviewFromTemplateGD(string $bgPath, string $outPath, ar
     /** (opcional) GET /certificados/lista */
     public function lista(Request $request, Response $response): Response
     {
-        $rows = (new CertificadoModel())->listar();
+        $certificados = (new CertificadoModel())->listar(); // <-- usa este nombre
         ob_start();
         include __DIR__ . '/../Views/certificados/lista.php';
         $html = ob_get_clean();
-
+    
         $response->getBody()->write($html);
         return $response;
     }
+    
 
     private function generarPdfDesdePlantilla(string $templatePdfPath, string $outPdfPath, array $data): void
     {
