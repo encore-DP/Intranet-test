@@ -25,6 +25,9 @@ class CertificadoController
 {
     private string $certDir; // carpeta física de archivos
     private string $certUrl; // URL pública base a esa carpeta
+    private string $SRC = '/home/delcorb/intranet.certiperu.com/CERTIF'; // origen
+    private string $DST = '/home/USUARIO/certiperu.com/certificados';          // destino
+    private bool $MIRROR = false; // <-- como dijiste, primero en false
 
     public function __construct()
     {
@@ -36,6 +39,48 @@ class CertificadoController
             @mkdir($this->certDir . "/{$d}", 0775, true);
         }
     }
+
+        // ===== ADD: Acción POST /certificados/sync =====
+    public function sync(\Psr\Http\Message\ServerRequestInterface $request,
+                         \Psr\Http\Message\ResponseInterface $response): \Psr\Http\Message\ResponseInterface
+    {
+        if (\session_status() === PHP_SESSION_NONE) \session_start();
+
+        // (Opcional) CSRF: valida si en tu formulario mandas un token
+        $body = (array)($request->getParsedBody() ?? []);
+        if (isset($_SESSION['csrf']) && (!isset($body['csrf']) || $body['csrf'] !== $_SESSION['csrf'])) {
+            $_SESSION['flash_sync'] = ['ok'=>false,'msg'=>'Solicitud inválida (CSRF).'];
+            return $response
+                ->withHeader('Location', $request->getHeaderLine('Referer') ?: '/certificados')
+                ->withStatus(302);
+        }
+
+        try {
+            $this->ensureDir($this->DST);
+            if (!\is_dir($this->SRC)) {
+                throw new \RuntimeException("Ruta origen no existe: {$this->SRC}");
+            }
+
+            @\set_time_limit(300);
+            @\ini_set('memory_limit','512M');
+
+            $report = [];
+            $this->syncUpdateOnly($this->SRC, $this->DST, $report);
+            if ($this->MIRROR) {
+                $this->mirrorDeleteExtras($this->SRC, $this->DST, $report);
+            }
+
+            $_SESSION['flash_sync'] = ['ok'=>true,'msg'=>'Sincronización completada.','report'=>$report];
+        } catch (\Throwable $e) {
+            $_SESSION['flash_sync'] = ['ok'=>false,'msg'=>$e->getMessage()];
+        }
+
+        // Redirige de vuelta al listado (usa Referer si existe)
+        $back = $request->getHeaderLine('Referer') ?: '/certificados';
+        return $response->withHeader('Location', $back)->withStatus(302);
+    }
+    // ===== END: Acción POST /certificados/sync =====
+
 
     /** GET /certificados/nuevo */
     public function nuevo(Request $request, Response $response): Response
@@ -510,6 +555,85 @@ private function renderPreviewFromTemplateGD(string $bgPath, string $outPath, ar
 
     /* ===== Helpers ===== */
 
+    // ===== ADD: Helpers de sincronización =====
+    private function ensureDir(string $dir): void {
+        if (!\is_dir($dir)) {
+            if (!\mkdir($dir, 0755, true) && !\is_dir($dir)) {
+                throw new \RuntimeException("No se pudo crear: $dir");
+            }
+        }
+    }
+    
+    private function listFilesRecursive(string $base): array {
+        $base = \rtrim($base, \DIRECTORY_SEPARATOR);
+        $result = [];
+        $it = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($base, \FilesystemIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::SELF_FIRST
+        );
+        foreach ($it as $path => $info) {
+            $rel = \substr($path, \strlen($base) + 1);
+            $result[$rel] = ['is_dir'=>$info->isDir(), 'abs'=>$path];
+        }
+        return $result;
+    }
+    
+    private function copyIfNewer(string $src, string $dst): bool {
+        $dstDir = \dirname($dst);
+        if (!\is_dir($dstDir)) {
+            if (!\mkdir($dstDir, 0755, true) && !\is_dir($dstDir)) {
+                throw new \RuntimeException("No se pudo crear: $dstDir");
+            }
+        }
+        if (!\file_exists($dst) || \filemtime($src) > @\filemtime($dst) || \filesize($src) !== @\filesize($dst)) {
+            if (!\copy($src, $dst)) {
+                throw new \RuntimeException("Fallo al copiar: $src -> $dst");
+            }
+            @\chmod($dst, 0644);
+            return true;
+        }
+        return false;
+    }
+    
+    private function syncUpdateOnly(string $SRC, string $DST, array &$rep): void {
+        $rep['created_dirs']=0; $rep['copied_files']=0; $rep['skipped']=0;
+        $SRC=\rtrim($SRC, \DIRECTORY_SEPARATOR);
+        $DST=\rtrim($DST, \DIRECTORY_SEPARATOR);
+        $this->ensureDir($DST);
+        $srcMap = $this->listFilesRecursive($SRC);
+        foreach ($srcMap as $rel=>$meta){
+            $src=$meta['abs']; $dst=$DST.\DIRECTORY_SEPARATOR.$rel;
+            if ($meta['is_dir']){
+                if (!\is_dir($dst)){
+                    if (!\mkdir($dst,0755,true) && !\is_dir($dst)) {
+                        throw new \RuntimeException("No se pudo crear: $dst");
+                    }
+                    $rep['created_dirs']++;
+                }
+            } else {
+                $did = $this->copyIfNewer($src,$dst);
+                $did ? $rep['copied_files']++ : $rep['skipped']++;
+            }
+        }
+    }
+    
+    private function mirrorDeleteExtras(string $SRC, string $DST, array &$rep): void {
+        $rep['deleted_files']=0; $rep['deleted_dirs']=0;
+        $srcMap = $this->listFilesRecursive(\rtrim($SRC, \DIRECTORY_SEPARATOR));
+        $dstMap = $this->listFilesRecursive(\rtrim($DST, \DIRECTORY_SEPARATOR));
+        $delF=[]; $delD=[];
+        foreach ($dstMap as $rel=>$meta){
+            if (!\array_key_exists($rel, $srcMap)) {
+                $meta['is_dir'] ? $delD[]=$meta['abs'] : $delF[]=$meta['abs'];
+            }
+        }
+        foreach ($delF as $f){ if (\is_file($f) && @\unlink($f)) $rep['deleted_files']++; }
+        \rsort($delD);
+        foreach ($delD as $d){ @\rmdir($d) && $rep['deleted_dirs']++; }
+    }
+    // ===== END: Helpers de sincronización =====
+    
+    
     private function randomCode6(): string
     {
         $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';

@@ -10,6 +10,8 @@
     use App\Controllers\EmpresaController;
     use App\Controllers\CertificadoController;
 
+
+
     return function (App $app): void {
 
         // Home: carga una vista
@@ -22,6 +24,9 @@
             $response->getBody()->write($html);
             return $response;
         });
+
+        $app->get('/certificados/lista', [CertificadoController::class, 'lista']);
+        $app->post('/certificados/sync', [CertificadoController::class, 'sync']); 
 
         // Grupo de rutas: Alumnos
         $app->group('/alumnos', function (RouteCollectorProxy $group) {
