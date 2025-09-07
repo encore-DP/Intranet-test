@@ -13,7 +13,6 @@ $app = AppFactory::create();
 $app->addBodyParsingMiddleware();
 $app->addRoutingMiddleware();
 $app->addErrorMiddleware(true, true, true);
-$app->post('/certificados/sync', [CertificadoController::class, 'sync']);
 
 // Cargar rutas
 (require __DIR__ . '/../routes/web.php')($app);
