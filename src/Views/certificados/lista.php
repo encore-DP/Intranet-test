@@ -71,11 +71,11 @@ if (empty($_SESSION['csrf'])) $_SESSION['csrf'] = bin2hex(random_bytes(32));
               <div class="col-12">
                 <div class="card">
                   <div class="card-body">
-                        <form method="post" action="/certificados/sync" style="display:inline"
-                              onsubmit="return confirm('¿Copiar ahora los Certificados al otro dominio?');">
-                          <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf']) ?>">
-                          <button type="submit" class="btn btn-dark">Copiar Certificados ahora</button>
-                        </form>
+                      <form method="post" action="/certificados/sync" style="display:inline"
+                            onsubmit="return confirm('¿Copiar ahora los Certificados al otro dominio?');">
+                        <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf']) ?>">
+                        <button type="submit" class="btn btn-dark">Copiar Certificados ahora</button>
+                      </form>
                     <div class="table-responsive">
                       <table class="table datatable" id="datatable_cert">
                         <thead>

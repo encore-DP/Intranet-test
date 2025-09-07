@@ -25,9 +25,6 @@
             return $response;
         });
 
-        $app->get('/certificados/lista', [CertificadoController::class, 'lista']);
-        $app->post('/certificados/sync', [CertificadoController::class, 'sync']); 
-
         // Grupo de rutas: Alumnos
         $app->group('/alumnos', function (RouteCollectorProxy $group) {
             $group->get('/lista',  [AlumnoController::class, 'lista']);
@@ -68,8 +65,9 @@
             $group->get('/{id}/editar', [CertificadoController::class, 'editarVista']);
             $group->post('/{id}/editar', [CertificadoController::class, 'editar']);
             $group->post('/{id}/eliminar', [CertificadoController::class, 'eliminar']);
+            $group->post('/sync', [CertificadoController::class, 'sync'])->setName('certificados.sync');
+
         });
         
-
         
     };

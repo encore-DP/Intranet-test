@@ -25,8 +25,8 @@ class CertificadoController
 {
     private string $certDir; // carpeta física de archivos
     private string $certUrl; // URL pública base a esa carpeta
-    private string $SRC = '/home/delcorb/intranet.certiperu.com/CERTIF'; // origen
-    private string $DST = '/home/USUARIO/certiperu.com/certificados';          // destino
+    private string $SRC = '/home/delcorbc/intranet.certiperu.com/CERTIF'; // origen
+    private string $DST = '/home/delcorbc/certiperu.com/certificados';          // destino
     private bool $MIRROR = false; // <-- como dijiste, primero en false
 
     public function __construct()
@@ -51,7 +51,7 @@ class CertificadoController
         if (isset($_SESSION['csrf']) && (!isset($body['csrf']) || $body['csrf'] !== $_SESSION['csrf'])) {
             $_SESSION['flash_sync'] = ['ok'=>false,'msg'=>'Solicitud inválida (CSRF).'];
             return $response
-                ->withHeader('Location', $request->getHeaderLine('Referer') ?: '/certificados')
+                ->withHeader('Location', '/certificados/lista')
                 ->withStatus(302);
         }
 
@@ -76,8 +76,8 @@ class CertificadoController
         }
 
         // Redirige de vuelta al listado (usa Referer si existe)
-        $back = $request->getHeaderLine('Referer') ?: '/certificados';
-        return $response->withHeader('Location', $back)->withStatus(302);
+        return $response->withHeader('Location', '/certificados/lista')->withStatus(302);
+
     }
     // ===== END: Acción POST /certificados/sync =====
 
@@ -563,7 +563,7 @@ private function renderPreviewFromTemplateGD(string $bgPath, string $outPath, ar
             }
         }
     }
-    
+
     private function listFilesRecursive(string $base): array {
         $base = \rtrim($base, \DIRECTORY_SEPARATOR);
         $result = [];
@@ -577,7 +577,7 @@ private function renderPreviewFromTemplateGD(string $bgPath, string $outPath, ar
         }
         return $result;
     }
-    
+
     private function copyIfNewer(string $src, string $dst): bool {
         $dstDir = \dirname($dst);
         if (!\is_dir($dstDir)) {
@@ -594,7 +594,7 @@ private function renderPreviewFromTemplateGD(string $bgPath, string $outPath, ar
         }
         return false;
     }
-    
+
     private function syncUpdateOnly(string $SRC, string $DST, array &$rep): void {
         $rep['created_dirs']=0; $rep['copied_files']=0; $rep['skipped']=0;
         $SRC=\rtrim($SRC, \DIRECTORY_SEPARATOR);
@@ -616,7 +616,7 @@ private function renderPreviewFromTemplateGD(string $bgPath, string $outPath, ar
             }
         }
     }
-    
+
     private function mirrorDeleteExtras(string $SRC, string $DST, array &$rep): void {
         $rep['deleted_files']=0; $rep['deleted_dirs']=0;
         $srcMap = $this->listFilesRecursive(\rtrim($SRC, \DIRECTORY_SEPARATOR));
@@ -632,7 +632,7 @@ private function renderPreviewFromTemplateGD(string $bgPath, string $outPath, ar
         foreach ($delD as $d){ @\rmdir($d) && $rep['deleted_dirs']++; }
     }
     // ===== END: Helpers de sincronización =====
-    
+
     
     private function randomCode6(): string
     {
