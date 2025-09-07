@@ -25,7 +25,7 @@ class CertificadoController
 {
     private string $certDir; // carpeta física de archivos
     private string $certUrl; // URL pública base a esa carpeta
-    private string $SRC = '/home/delcorbc/intranet.certiperu.com/CERTIF'; // origen
+    private string $SRC = '/home/delcorbc/intranet.certiperu.com/public/CERTIF'; // origen
     private string $DST = '/home/delcorbc/certiperu.com/certificados';          // destino
     private bool $MIRROR = false; // <-- como dijiste, primero en false
 
@@ -76,7 +76,7 @@ class CertificadoController
         }
 
         // Redirige de vuelta al listado (usa Referer si existe)
-        return $response->withHeader('Location', '/certificados/lista')->withStatus(302);
+            return $response->withHeader('Location', '/certificados/lista')->withStatus(302);
 
     }
     // ===== END: Acción POST /certificados/sync =====
